@@ -27,6 +27,6 @@ void soc_run(SoC *soc) {
         idbus->inst = ibus->inst_rdata;
         CPU->core_decode(CPU, idbus);
         CPU->core_lsu(CPU, idbus, dbus);
-        CPU->core_wb(CPUM idbus);
+        CPU->core_wb(CPU, idbus);
     }
 }

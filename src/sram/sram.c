@@ -13,7 +13,7 @@ SRAM *get_inst_sram(const char *filename) {
     return inst_sram;
 }
 
-SRAM *get_inst_sram(const char *filename) {
+SRAM *get_data_sram(const char *filename) {
     SRAM *inst_sram = (SRAM *) malloc(sizeof(SRAM));
     init_data_sram(inst_sram, filename);
     return inst_sram;
@@ -36,7 +36,7 @@ uint32_t sram_read(SRAM *sram, uint32_t addr) {
     uint32_t _addr = addr & 0xfc;
     rewind(sram->file);
     fseek(sram->file, _addr, SEEK_CUR);
-    fread(result, sizeof(result), 1, sram->file);
+    fread(&result, sizeof(result), 1, sram->file);
     return result;
 }
 
@@ -44,7 +44,7 @@ void sram_write(SRAM *sram, uint32_t addr, uint32_t wdata) {
     uint32_t _addr = addr & 0xfc;
     rewind(sram->file);
     fseek(sram->file, _addr, SEEK_CUR);
-    fwrite(wdata, sizeof(wdata), 1, sram->file);
+    fwrite(&wdata, sizeof(wdata), 1, sram->file);
 }
 
 void inst_sram_proxy(SRAM *sram, InstBus *ibus) {

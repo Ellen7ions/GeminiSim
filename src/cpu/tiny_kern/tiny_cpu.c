@@ -51,9 +51,9 @@ void tinycpu_lsu(Core *core, IDBus *idbus, DataBus *dbus) {
 void tinycpu_wb(Core *core, IDBus *idbus) {
     if (idbus->w_reg_en) {
         if (idbus->lsu_en && idbus->lsu_wen == 0) {
-            core->regfile[idbus->w_reg_addr] = idbus->lsu_rdata;
+            core->regfile->regs[idbus->w_reg_addr] = idbus->lsu_rdata;
         } else {
-            core->regfile[idbus->w_reg_addr] = idbus->alu_result;
+            core->regfile->regs[idbus->w_reg_addr] = idbus->alu_result;
         }
     }
 }

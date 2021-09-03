@@ -5,6 +5,7 @@
 #ifndef GEMINISIM_SRAM_H
 #define GEMINISIM_SRAM_H
 
+#include <stdio.h>
 #include "../cpu/cpubus.h"
 
 // 64 line --> 64 * 4 = 256B

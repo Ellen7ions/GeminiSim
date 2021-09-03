@@ -7,7 +7,7 @@
 
 #include "stdint.h"
 #include "../regfile.h"
-#include "../cpubus.h.h"
+#include "../cpubus.h"
 #include "../core/core.h"
 
 Core * get_tinycpu();
