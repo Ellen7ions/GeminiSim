@@ -13,15 +13,15 @@ typedef struct Core {
     RegFile *regfile;
     uint32_t pc;
 
-    void (*core_fetch)(struct Core *core, IDBus *idbus, InstBus *ibus);
-
-    void (*core_decode)(struct Core *core, IDBus *idbus);
-
-    void (*core_exe)(struct Core *core, IDBus *idbus);
-
-    void (*core_lsu)(struct Core *core, IDBus *idbus, DataBus *dbus);
-
-    void (*core_wb)(struct Core *core, IDBus *idbus);
+    // void (*core_fetch)(struct Core *core, IDBus *idbus, InstBus *ibus);
+    //
+    // void (*core_decode)(struct Core *core, IDBus *idbus);
+    //
+    // void (*core_exe)(struct Core *core, IDBus *idbus);
+    //
+    // void (*core_lsu)(struct Core *core, IDBus *idbus, DataBus *dbus);
+    //
+    // void (*core_wb)(struct Core *core, IDBus *idbus);
 } Core;
 
 #endif //GEMINISIM_CORE_H

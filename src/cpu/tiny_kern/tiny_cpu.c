@@ -20,22 +20,17 @@ Core *get_tinycpu() {
     int i;
     for (i = 0; i < 32; i++) tinycpu->regfile->regs[i] = 0;
     tinycpu->pc = 0xbfc00000;
-    tinycpu->core_fetch = tinycpu_fetch;
-    tinycpu->core_decode = tinycpu_decode;
-    tinycpu->core_exe = tinycpu_exe;
-    tinycpu->core_lsu = tinycpu_lsu;
-    tinycpu->core_wb = tinycpu_wb;
     return tinycpu;
 }
 
 void tinycpu_run(SoC *soc, void(*hook)(SoC *soc)) {
-    CPU->core_fetch(CPU, IDBUS, IBUS);
+    tinycpu_fetch(CPU, IDBUS, IBUS);
     inst_sram_proxy(INST_SRAM, IBUS);
     IDBUS->inst = IBUS->inst_rdata;
-    CPU->core_decode(CPU, IDBUS);
-    CPU->core_exe(CPU, IDBUS);
-    CPU->core_lsu(CPU, IDBUS, DBUS);
-    CPU->core_wb(CPU, IDBUS);
+    tinycpu_decode(CPU, IDBUS);
+    tinycpu_exe(CPU, IDBUS);
+    tinycpu_lsu(CPU, IDBUS, DBUS);
+    tinycpu_wb(CPU, IDBUS);
     hook(soc);
 }
 
