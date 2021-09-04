@@ -6,6 +6,13 @@
 #include "../../def/utils.h"
 #include "tiny_cpu.h"
 
+#define CPU         soc->cpu
+#define IBUS        soc->ibus
+#define DBUS        soc->dbus
+#define IDBUS       soc->idbus
+#define INST_SRAM   soc->inst_sram
+#define DATA_SRAM   soc->data_sram
+
 Core *get_tinycpu() {
     Core *tinycpu = (Core *) malloc(sizeof(Core));
     tinycpu->regfile = (RegFile *) malloc(sizeof(RegFile));
@@ -21,6 +28,17 @@ Core *get_tinycpu() {
     return tinycpu;
 }
 
+void tinycpu_run(SoC *soc, void(*hook)(SoC *soc)) {
+    CPU->core_fetch(CPU, IDBUS, IBUS);
+    inst_sram_proxy(INST_SRAM, IBUS);
+    IDBUS->inst = IBUS->inst_rdata;
+    CPU->core_decode(CPU, IDBUS);
+    CPU->core_exe(CPU, IDBUS);
+    CPU->core_lsu(CPU, IDBUS, DBUS);
+    CPU->core_wb(CPU, IDBUS);
+    hook(soc);
+}
+
 void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus) {
     ibus->inst_en = 1;
     ibus->inst_addr = core->pc;
@@ -29,12 +47,12 @@ void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus) {
 }
 
 void tinycpu_decode(Core *core, IDBus *idbus) {
-    uint32_t op_code    = SLICE_OP(idbus->inst);
-    uint32_t func_code  = SLICE_FUNC(idbus->inst);
-    uint32_t rs         = SLICE_RS(idbus->inst);
-    uint32_t rt         = SLICE_RT(idbus->inst);
-    uint32_t rd         = SLICE_RD(idbus->inst);
-    uint32_t ext_imme   = SLICE_IMME(idbus->inst);
+    uint32_t op_code = SLICE_OP(idbus->inst);
+    uint32_t func_code = SLICE_FUNC(idbus->inst);
+    uint32_t rs = SLICE_RS(idbus->inst);
+    uint32_t rt = SLICE_RT(idbus->inst);
+    uint32_t rd = SLICE_RD(idbus->inst);
+    uint32_t ext_imme = SLICE_IMME(idbus->inst);
 
     idbus->rs_data = core->regfile->regs[rs];
     idbus->rt_data = core->regfile->regs[rt];

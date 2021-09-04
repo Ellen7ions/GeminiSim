@@ -9,9 +9,12 @@
 #include "../regfile.h"
 #include "../cpubus.h"
 #include "../core/core.h"
+#include "soc/soc.h"
 #include "def/mips.h"
 
 Core *get_tinycpu();
+
+void tinycpu_run(SoC *soc, void(*hook)(SoC *soc));
 
 void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus);
 
