@@ -40,4 +40,12 @@
 #define S8	    30	/* same like fp! */
 #define RA	    31	/* return address */
 
+#define ADDIU_OP_CODE   0b001001
+#define SPECIAL_OP_CODE 0b000000
+
+#define ADD_FUNCT       0b100000
+#define ADDU_FUNCT      0b100001
+#define SUB_FUNCT       0b100010
+
+
 #endif //GEMINISIM_MIPS_H

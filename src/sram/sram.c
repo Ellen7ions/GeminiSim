@@ -35,7 +35,7 @@ uint32_t sram_read(SRAM *sram, uint32_t addr) {
     uint32_t result;
     uint32_t _addr = addr & 0xfc;
     rewind(sram->file);
-    fseek(sram->file, _addr, SEEK_CUR);
+    fseek(sram->file, _addr, SEEK_SET);
     fread(&result, sizeof(result), 1, sram->file);
     return result;
 }

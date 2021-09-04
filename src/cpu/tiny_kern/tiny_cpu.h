@@ -9,10 +9,11 @@
 #include "../regfile.h"
 #include "../cpubus.h"
 #include "../core/core.h"
+#include "def/mips.h"
 
-Core * get_tinycpu();
+Core *get_tinycpu();
 
-void tinycpu_fetch(Core *core, InstBus *ibus);
+void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus);
 
 void tinycpu_decode(Core *core, IDBus *idbus);
 

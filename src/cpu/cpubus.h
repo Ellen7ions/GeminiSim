@@ -22,7 +22,11 @@ typedef struct DataBus {
 } DataBus;
 
 typedef struct IDBus {
+    uint32_t pc;
     uint32_t inst;
+
+    uint32_t rs_data;
+    uint32_t rt_data;
 
     uint32_t src_a;
     uint32_t src_b;

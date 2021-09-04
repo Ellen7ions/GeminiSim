@@ -13,7 +13,7 @@ typedef struct Core {
     RegFile *regfile;
     uint32_t pc;
 
-    void (*core_fetch)(struct Core *core, InstBus *ibus);
+    void (*core_fetch)(struct Core *core, IDBus *idbus, InstBus *ibus);
 
     void (*core_decode)(struct Core *core, IDBus *idbus);
 

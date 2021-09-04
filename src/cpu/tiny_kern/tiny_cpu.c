@@ -7,31 +7,47 @@
 #include "tiny_cpu.h"
 
 Core *get_tinycpu() {
-    Core *tinycpu = (Core*)malloc(sizeof(Core));
-    tinycpu->core_fetch     = tinycpu_fetch;
-    tinycpu->core_decode    = tinycpu_decode;
-    tinycpu->core_exe       = tinycpu_exe;
-    tinycpu->core_lsu       = tinycpu_lsu;
-    tinycpu->core_wb        = tinycpu_wb;
+    Core *tinycpu = (Core *) malloc(sizeof(Core));
+    tinycpu->regfile = (RegFile *) malloc(sizeof(RegFile));
+    tinycpu->regfile->regs = (uint32_t *) malloc(32 * sizeof(uint32_t));
+    int i;
+    for (i = 0; i < 32; i++) tinycpu->regfile->regs[i] = 0;
+    tinycpu->pc = 0xbfc00000;
+    tinycpu->core_fetch = tinycpu_fetch;
+    tinycpu->core_decode = tinycpu_decode;
+    tinycpu->core_exe = tinycpu_exe;
+    tinycpu->core_lsu = tinycpu_lsu;
+    tinycpu->core_wb = tinycpu_wb;
     return tinycpu;
 }
 
-void tinycpu_fetch(Core *core, InstBus *ibus) {
+void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus) {
     ibus->inst_en = 1;
     ibus->inst_addr = core->pc;
+    idbus->pc = core->pc;
+    core->pc = core->pc + 4;
 }
 
 void tinycpu_decode(Core *core, IDBus *idbus) {
-    uint32_t op_code = SLICE(idbus->inst, 31, 26);
-    uint32_t func_code = SLICE(idbus->inst, 5, 0);
-    uint32_t rs = SLICE(idbus->inst, 25, 21);
-    uint32_t rt = SLICE(idbus->inst, 20, 16);
-    uint32_t rd = SLICE(idbus->inst, 15, 11);
+    uint32_t op_code    = SLICE_OP(idbus->inst);
+    uint32_t func_code  = SLICE_FUNC(idbus->inst);
+    uint32_t rs         = SLICE_RS(idbus->inst);
+    uint32_t rt         = SLICE_RT(idbus->inst);
+    uint32_t rd         = SLICE_RD(idbus->inst);
+    uint32_t ext_imme   = SLICE_IMME(idbus->inst);
 
-    idbus->src_a = rs;
-    idbus->src_b = rt;
-    idbus->w_reg_addr = rd;
-    idbus->alu_op_code = ALU_SEL_ADD;
+    idbus->rs_data = core->regfile->regs[rs];
+    idbus->rt_data = core->regfile->regs[rt];
+
+    idbus->src_a = idbus->rs_data;
+    idbus->src_b = (op_code == SPECIAL_OP_CODE) ? idbus->rt_data : (op_code == ADDIU_OP_CODE) ? ext_imme : 0;
+
+    idbus->w_reg_en = (op_code == SPECIAL_OP_CODE) || (op_code == ADDIU_OP_CODE);
+    idbus->w_reg_addr = (op_code == SPECIAL_OP_CODE) ? rd : (op_code == ADDIU_OP_CODE) ? rt : 0;
+
+    idbus->alu_op_code = (op_code == SPECIAL_OP_CODE && (func_code == ADD_FUNCT || func_code == ADDU_FUNCT) ||
+                          op_code == ADDIU_OP_CODE)
+                         ? ALU_SEL_ADD : 0;
     idbus->lsu_en = 0;
     idbus->lsu_wen = 0;
     idbus->lsu_wdata = 0;

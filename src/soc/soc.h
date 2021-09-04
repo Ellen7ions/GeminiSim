@@ -22,10 +22,14 @@ typedef struct SoC {
 
     Core *cpu;
 
+    InstBus *ibus;
+    DataBus *dbus;
+    IDBus *idbus;
+
 } SoC;
 
 void soc_init(SoC *soc, int32_t cycle_count, const char *inst_filename, const char *data_filename);
 
-void soc_run(SoC *soc);
+void soc_run(SoC *soc, void (*hook)(SoC *soc));
 
 #endif //GEMINISIM_SOC_H
