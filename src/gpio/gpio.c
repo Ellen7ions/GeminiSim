@@ -7,15 +7,16 @@
 #include <stdio.h>
 
 #include "gpio.h"
-#include "../def/mm.h"
 
 GPIO *get_gpio() {
-    return (GPIO*)malloc(sizeof(GPIO));
+    GPIO * gpio = (GPIO*)malloc(sizeof(GPIO));
+    gpio->led = 0;
+    return gpio;
 }
 
-uint32_t gpio_top(GPIO *gpio, uint32_t addr, uint8_t wen, uint32_t wdata) {
-    if ((addr & 0xffff) == 0xf000) {
-        return gpio_led_update(gpio, wen, wdata);
+uint32_t gpio_top(GPIO *gpio, Bus *bus) {
+    if ((bus->addr & 0xffff) == 0xf000) {
+        return gpio_led_update(gpio, bus->wen, bus->wdata);
     }
     return 0;
 }
@@ -28,8 +29,8 @@ uint32_t gpio_led_update(GPIO *gpio, uint8_t wen, uint32_t wdata) {
 }
 
 void gpio_led_show(GPIO *gpio) {
-    uint16_t i = 15;
-    for (i; i >= 1; i--) {
+    int32_t i = 15;
+    for (i; i >= 0; i--) {
         if (((gpio->led & (1 << i)) >> i) == 1) {
             printf("[*] ");
         } else {

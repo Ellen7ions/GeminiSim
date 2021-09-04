@@ -7,20 +7,6 @@
 
 #include "stdint.h"
 
-typedef struct InstBus {
-    uint32_t inst_en;
-    uint32_t inst_addr;
-    uint32_t inst_rdata;
-} InstBus;
-
-typedef struct DataBus {
-    uint32_t data_en;
-    uint32_t data_wen;
-    uint32_t data_addr;
-    uint32_t data_wdata;
-    uint32_t data_rdata;
-} DataBus;
-
 typedef struct IDBus {
     uint32_t pc;
     uint32_t inst;

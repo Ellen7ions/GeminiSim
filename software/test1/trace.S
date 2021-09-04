@@ -1,5 +1,14 @@
-addiu   $1, $0, 0x3fff
-addiu   $2, $0, 0xabcd
-addu    $3, $1, $2
-sw      $3, 4($0)
-lw      $4, 4($0)
+lui     $1, 0xbfaf
+addiu   $1, $1, 0xf000
+addiu   $2, $0, 0x0
+sw      $2, 0($1)
+addiu   $2, $0, 0x1
+sw      $2, 0($1)
+addiu   $2, $0, 0x2
+sw      $2, 0($1)
+addiu   $2, $0, 0x4
+sw      $2, 0($1)
+addiu   $2, $0, 0x8
+sw      $2, 0($1)
+addiu   $2, $0, 0x10
+sw      $2, 0($1)

@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include "../cpu/cpubus.h"
+#include "bus/bus.h"
 
 // 64 line --> 64 * 4 = 256B
 #define SRAM_SIZE 64
@@ -29,8 +30,6 @@ uint32_t sram_read(SRAM *sram, uint32_t addr);
 
 void sram_write(SRAM *sram, uint32_t addr, uint32_t wdata);
 
-void inst_sram_proxy(SRAM *sram, InstBus *ibus);
-
-void data_sram_proxy(SRAM *sram, DataBus *dbus);
+void sram_top(SRAM *sram, Bus *bus);
 
 #endif //GEMINISIM_SRAM_H

@@ -9,6 +9,7 @@
 #include "gpio/gpio.h"
 #include "sram/sram.h"
 #include "cpu/core/core.h"
+#include "bus/bus.h"
 
 typedef struct SoC {
     int32_t cycle_count;
@@ -21,11 +22,13 @@ typedef struct SoC {
 
     Core *cpu;
 
-    InstBus *ibus;
-    DataBus *dbus;
+    Bus *ibus;
+    Bus *dbus;
     IDBus *idbus;
 
 } SoC;
+
+void soc_bus_top(SoC *soc, Bus *bus, uint32_t sram_sel);
 
 void soc_init(
         SoC *soc,
@@ -35,8 +38,10 @@ void soc_init(
         const char *data_filename
 );
 
-void soc_run(SoC *soc, void (*cpu_run)(SoC *soc, void (*hook)(SoC *soc)));
+void soc_run(SoC *soc, void (*cpu_run)(SoC *soc, void (*hooks[])(SoC *soc), int hook_len));
 
 extern void monitor_top(SoC *soc);
+
+extern void show_gpio_led(SoC *soc);
 
 #endif //GEMINISIM_SOC_H

@@ -18,7 +18,7 @@ int main() {
     SoC soc;
     soc_init(
             &soc,
-            5,
+            15,
             get_tinycpu,
             "./software/test1/trace.bin",
             "./software/test1/disk.bin"

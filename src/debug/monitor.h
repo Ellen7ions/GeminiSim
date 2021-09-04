@@ -17,4 +17,6 @@ void show_trace_signals(IDBus *idbus);
 
 void monitor_top(SoC* soc);
 
+void show_gpio_led(SoC *soc);
+
 #endif //GEMINISIM_MONITOR_H

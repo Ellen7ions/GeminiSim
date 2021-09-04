@@ -14,15 +14,15 @@
 
 Core *get_tinycpu();
 
-void tinycpu_run(SoC *soc, void(*hook)(SoC *soc));
+void tinycpu_run(SoC *soc, void(*hooks[])(SoC *soc), int hook_len);
 
-void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus);
+void tinycpu_fetch(Core *core, IDBus *idbus, Bus *ibus);
 
 void tinycpu_decode(Core *core, IDBus *idbus);
 
 void tinycpu_exe(Core *core, IDBus *idbus);
 
-void tinycpu_lsu(Core *core, IDBus *idbus, DataBus *dbus);
+void tinycpu_lsu(Core *core, IDBus *idbus, Bus *dbus);
 
 void tinycpu_wb(Core *core, IDBus *idbus);
 

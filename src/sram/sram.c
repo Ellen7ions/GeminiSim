@@ -47,18 +47,12 @@ void sram_write(SRAM *sram, uint32_t addr, uint32_t wdata) {
     fwrite(&wdata, sizeof(wdata), 1, sram->file);
 }
 
-void inst_sram_proxy(SRAM *sram, InstBus *ibus) {
-    if (ibus->inst_en) {
-        ibus->inst_rdata = sram_read(sram, ibus->inst_addr);
-    }
-}
-
-void data_sram_proxy(SRAM *sram, DataBus *dbus) {
-    if (dbus->data_en) {
-        if (dbus->data_wen) {
-            sram_write(sram, dbus->data_addr, dbus->data_wdata);
+void sram_top(SRAM *sram, Bus *bus) {
+    if (bus->en) {
+        if (bus->wen) {
+            sram_write(sram, bus->addr, bus->wdata);
         } else {
-            dbus->data_rdata = sram_read(sram, dbus->data_addr);
+            bus->rdata = sram_read(sram, bus->addr);
         }
     }
 }
