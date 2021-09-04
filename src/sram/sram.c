@@ -58,7 +58,7 @@ void data_sram_proxy(SRAM *sram, DataBus *dbus) {
         if (dbus->data_wen) {
             sram_write(sram, dbus->data_addr, dbus->data_wdata);
         } else {
-            sram_read(sram, dbus->data_addr);
+            dbus->data_rdata = sram_read(sram, dbus->data_addr);
         }
     }
 }

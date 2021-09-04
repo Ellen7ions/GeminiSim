@@ -42,6 +42,8 @@
 
 #define ADDIU_OP_CODE   0b001001
 #define SPECIAL_OP_CODE 0b000000
+#define LW_OP_CODE      0b100011
+#define SW_OP_CODE      0b101011
 
 #define ADD_FUNCT       0b100000
 #define ADDU_FUNCT      0b100001

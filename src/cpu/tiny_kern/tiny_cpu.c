@@ -5,6 +5,7 @@
 
 #include "../../def/utils.h"
 #include "tiny_cpu.h"
+#include "cpu/alu/alu.h"
 
 #define CPU         soc->cpu
 #define IBUS        soc->ibus
@@ -30,6 +31,8 @@ void tinycpu_run(SoC *soc, void(*hook)(SoC *soc)) {
     tinycpu_decode(CPU, IDBUS);
     tinycpu_exe(CPU, IDBUS);
     tinycpu_lsu(CPU, IDBUS, DBUS);
+    data_sram_proxy(DATA_SRAM, DBUS);
+    IDBUS->lsu_rdata = DBUS->data_rdata;
     tinycpu_wb(CPU, IDBUS);
     hook(soc);
 }
@@ -42,28 +45,31 @@ void tinycpu_fetch(Core *core, IDBus *idbus, InstBus *ibus) {
 }
 
 void tinycpu_decode(Core *core, IDBus *idbus) {
-    uint32_t op_code = SLICE_OP(idbus->inst);
-    uint32_t func_code = SLICE_FUNC(idbus->inst);
-    uint32_t rs = SLICE_RS(idbus->inst);
-    uint32_t rt = SLICE_RT(idbus->inst);
-    uint32_t rd = SLICE_RD(idbus->inst);
-    uint32_t ext_imme = SLICE_IMME(idbus->inst);
+    uint32_t op_code    = SLICE_OP  (idbus->inst);
+    uint32_t func_code  = SLICE_FUNC(idbus->inst);
+    uint32_t rs         = SLICE_RS  (idbus->inst);
+    uint32_t rt         = SLICE_RT  (idbus->inst);
+    uint32_t rd         = SLICE_RD  (idbus->inst);
+    uint32_t ext_imme   = SLICE_IMME(idbus->inst);
 
     idbus->rs_data = core->regfile->regs[rs];
     idbus->rt_data = core->regfile->regs[rt];
 
     idbus->src_a = idbus->rs_data;
-    idbus->src_b = (op_code == SPECIAL_OP_CODE) ? idbus->rt_data : (op_code == ADDIU_OP_CODE) ? ext_imme : 0;
+    idbus->src_b = (op_code == SPECIAL_OP_CODE) ? idbus->rt_data : (op_code == ADDIU_OP_CODE || op_code == LW_OP_CODE ||
+                                                                    op_code == SW_OP_CODE) ? ext_imme : 0;
 
-    idbus->w_reg_en = (op_code == SPECIAL_OP_CODE) || (op_code == ADDIU_OP_CODE);
-    idbus->w_reg_addr = (op_code == SPECIAL_OP_CODE) ? rd : (op_code == ADDIU_OP_CODE) ? rt : 0;
+    idbus->w_reg_en = (op_code == SPECIAL_OP_CODE) ||
+                      (op_code == ADDIU_OP_CODE || op_code == LW_OP_CODE);
+    idbus->w_reg_addr = (op_code == SPECIAL_OP_CODE) ? rd : (op_code == ADDIU_OP_CODE || op_code == LW_OP_CODE) ? rt
+                                                                                                                : 0;
 
     idbus->alu_op_code = (op_code == SPECIAL_OP_CODE && (func_code == ADD_FUNCT || func_code == ADDU_FUNCT) ||
-                          op_code == ADDIU_OP_CODE)
+                          op_code == ADDIU_OP_CODE || op_code == LW_OP_CODE || op_code == SW_OP_CODE)
                          ? ALU_SEL_ADD : 0;
-    idbus->lsu_en = 0;
-    idbus->lsu_wen = 0;
-    idbus->lsu_wdata = 0;
+    idbus->lsu_en = (op_code == LW_OP_CODE || op_code == SW_OP_CODE);
+    idbus->lsu_wen = (op_code == SW_OP_CODE);
+    idbus->lsu_wdata = idbus->rt_data;
 }
 
 void tinycpu_exe(Core *core, IDBus *idbus) {
@@ -81,7 +87,7 @@ void tinycpu_wb(Core *core, IDBus *idbus) {
     if (idbus->w_reg_en) {
         if (idbus->lsu_en && idbus->lsu_wen == 0) {
             core->regfile->regs[idbus->w_reg_addr] = idbus->lsu_rdata;
-        } else {
+        } else if (idbus->w_reg_addr != 0){
             core->regfile->regs[idbus->w_reg_addr] = idbus->alu_result;
         }
     }
