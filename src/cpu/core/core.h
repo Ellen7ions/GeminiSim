@@ -10,7 +10,8 @@
 typedef struct Core {
     RegFile *regfile;
     uint32_t pc;
-
 } Core;
+
+Core* get_core();
 
 #endif //GEMINISIM_CORE_H
